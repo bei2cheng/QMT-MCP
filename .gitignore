@@ -7,3 +7,7 @@
 /工作任务跟踪表-陈星宇-0703.csv
 /工作任务跟踪表-陈星宇-0704.csv
 .idea
+src/__pycache__
+src/strategies/__pycache__
+src/tools/__pycache__
+src/utils/__pycache__

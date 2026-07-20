@@ -38,8 +38,10 @@
 ├── src/
 │   ├── config.py          # 配置管理模块（支持环境变量）
 │   ├── tools/             # MCP工具实现
-│   │   ├── trading_tool.py    # 交易执行工具
-│   │   └── qmt_tool.py        # QMT策略工具
+│   │   ├── trading_tool.py      # 交易执行工具
+│   │   ├── qmt_tool.py          # QMT策略工具
+│   │   ├── scanner_tool.py      # 自选/板块扫描
+│   │   └── auto_trade_engine.py # 自动交易编排与调度
 │   ├── strategies/        # 策略模块
 │   │   ├── ma_strategy.py     # 双均线策略
 │   │   └── strategy_generator.py # 策略生成器
@@ -277,10 +279,23 @@ save_qmt_strategy(
 ```
 
 ### 可用工具
-- `place_order`: 执行股票交易
-- `cancel_order`: 撤销订单
-- `save_qmt_strategy`: 保存自定义策略
-- `generate_ma_strategy`: 生成双均线策略
+- `place_order` / `cancel_order`: 手动下单与撤单
+- `get_positions`: 查询持仓
+- `save_qmt_strategy` / `generate_ma_strategy`: 保存/生成 QMT 策略文件
+- `set_watchlist` / `get_watchlist`: 管理自选池
+- `scan_watchlist`: 扫描自选，输出双均线金叉/死叉（不下单）
+- `scan_market`: 扫描沪深A股等板块（截断 limit，不下单）
+- `run_auto_trade_cycle`: 跑一轮自动交易（默认 `dry_run=true`）
+- `start_scheduler` / `stop_scheduler` / `get_scheduler_status`: 后台定时调度
+
+### MCP 侧自动交易（推荐流程）
+
+1. 配置 `.env` 中的 `WATCHLIST`，或调用 `set_watchlist("000001.SZ,600519.SH")`
+2. 先 `scan_watchlist` 或 `run_auto_trade_cycle(dry_run=true)` 看信号
+3. 确认无误后，模拟盘再 `run_auto_trade_cycle(dry_run=false, quantity=100)`
+4. 需要无人值守时：`start_scheduler(interval_sec=300, dry_run=true)`，观察后再改 `dry_run=false`
+
+> 默认 **dry_run=true**，不会真实下单。调度器在进程内线程运行，停止服务或调用 `stop_scheduler` 即停。
 
 ## 📋 配置说明
 

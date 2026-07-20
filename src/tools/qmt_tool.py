@@ -5,7 +5,7 @@ class QMTStrategyTool:
     """将策略代码保存到 QMT 本地量化策略目录的工具。
 
     默认目录通过环境变量 QMT_STRATEGY_DIR 指定，若未设置则使用
-    `D:\国金QMT交易端模拟\mpython`。
+    `D:\\国金QMT交易端模拟\\mpython`。
     """
 
     def __init__(self, strategy_dir: str | None = None):

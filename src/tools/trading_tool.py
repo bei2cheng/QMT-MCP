@@ -77,6 +77,13 @@ class TradingTool:
             
             if direction not in ['BUY', 'SELL']:
                 return "[ERROR] 交易方向必须是BUY或SELL"
+
+            order_value = float(price) * int(quantity)
+            if order_value > self.max_order_value:
+                return (
+                    f"[ERROR] 订单金额 {order_value:.2f} 超过单笔上限 "
+                    f"{self.max_order_value:.2f}"
+                )
             
             # 检查交易器连接
             if not self._ensure_trader_ready():
@@ -124,6 +131,16 @@ class TradingTool:
             logger.error(f"撤单执行失败: {e}")
             return f"[ERROR] 撤单执行失败: {str(e)}"
     
+    def get_position_dict(self, symbol: str) -> Optional[dict]:
+        """返回单票持仓字典，无持仓则 None（供自动交易引擎使用）"""
+        try:
+            if not self._ensure_trader_ready():
+                return None
+            return self._get_single_position(symbol)
+        except Exception as e:
+            logger.error(f"查询持仓字典失败: {e}")
+            return None
+
     def get_positions(self, symbol: str = None) -> str:
         """查询持仓信息
         
